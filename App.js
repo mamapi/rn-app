@@ -69,17 +69,21 @@ export default class App extends React.Component {
     }))
 
   onAddSubmit() {
-    this.setState(state => ({
-      notes: state.notes.concat({
-        title: state.newTitle,
-        content: state.newContent,
-        status: STATUS_NEW,
-      }),
+    const newNote = {
+      title: this.state.newTitle,
+      content: this.state.newContent,
+      status: STATUS_NEW,
+    }
+
+    const notes = this.state.notes.concat(newNote)
+
+    this.setState(() => ({
+      notes: notes,
       newTitle: '',
-      newContent: '',
+      newContent: ''
     }))
 
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.state.notes));
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
   }
 }
 
