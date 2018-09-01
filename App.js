@@ -46,19 +46,17 @@ export default class App extends React.Component {
 
         <FlatList
           data={this.state.notes}
-          renderItem={this.renderItem}
+          renderItem={({ item }) => (
+            <View style={styles.item}>
+              <Text style={styles.itemTitle}>{item.title}</Text>
+              <Text style={styles.itemContent}>{item.content}</Text>
+              <StatusIcon {...item} />
+            </View>
+          )}
           keyExtractor={(item, index) => `${index}`} />
       </View>
     );
   }
-
-  renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.itemTitle}>{item.title}</Text>
-      <Text style={styles.itemContent}>{item.content}</Text>
-      <StatusIcon {...item} />
-    </View>
-  )
 
   titleTextChanged = text =>
     this.setState(state => ({
