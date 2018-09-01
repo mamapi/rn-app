@@ -1,16 +1,26 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Button, TextInput, AsyncStorage } from 'react-native';
 import { Constants } from 'expo'
 import { Ionicons } from '@expo/vector-icons'
 
 const STATUS_DONE = 'Done'
 const STATUS_NEW = 'New'
+const STORAGE_KEY = "notes"
 export default class App extends React.Component {
 
   state = {
     newTitle: '',
     newContent: '',
     notes: [],
+  }
+
+  async componentDidMount() {
+    try {
+      const notes = await AsyncStorage.getItem(STORAGE_KEY)
+      this.setState({ notes: JSON.parse(notes) || [] })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   render() {
@@ -30,11 +40,14 @@ export default class App extends React.Component {
           onChangeText={this.contentTextChanged}
         />
         <Button style={styles.itemStatusButton}
-          onPress={() => this.addSubmit()}
+          onPress={() => this.onAddSubmit()}
           title="Add"
         />
 
-        <FlatList data={this.state.notes} renderItem={this.renderItem} />
+        <FlatList
+          data={this.state.notes}
+          renderItem={this.renderItem}
+          keyExtractor={(item, index) => `${index}`} />
       </View>
     );
   }
@@ -43,9 +56,7 @@ export default class App extends React.Component {
     <View style={styles.item}>
       <Text style={styles.itemTitle}>{item.title}</Text>
       <Text style={styles.itemContent}>{item.content}</Text>
-
       <StatusIcon {...item} />
-
     </View>
   )
 
@@ -59,7 +70,7 @@ export default class App extends React.Component {
       newContent: text,
     }))
 
-  addSubmit() {
+  onAddSubmit() {
     this.setState(state => ({
       notes: state.notes.concat({
         title: state.newTitle,
@@ -69,6 +80,8 @@ export default class App extends React.Component {
       newTitle: '',
       newContent: '',
     }))
+
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.state.notes));
   }
 }
 
